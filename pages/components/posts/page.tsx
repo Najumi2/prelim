@@ -31,13 +31,14 @@ const Post: React.FC = () => {
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
-  };
+  };  
   
-
   const handlePostClick = (post) => {
     setSelectedPost(post);
-    fetchComments(post.id);
-    setOpenModal(true);
+    if (post && post.id) {
+      fetchComments(post.id);
+      setOpenModal(true);
+    }
   };
 
   const handleCloseModal = () => {
@@ -112,4 +113,3 @@ const Post: React.FC = () => {
 };
 
 export default Post;
-
