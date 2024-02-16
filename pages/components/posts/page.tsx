@@ -23,7 +23,7 @@ const Post: React.FC = () => {
     }
   };
 
-  const fetchComments = async (postId) => {
+  const fetchComments = async (postId: number) => {
     try {
       const response = await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${postId}`);
       const data = await response.json();
@@ -32,6 +32,7 @@ const Post: React.FC = () => {
       console.error('Error fetching comments:', error);
     }
   };
+  
 
   const handlePostClick = (post) => {
     setSelectedPost(post);
