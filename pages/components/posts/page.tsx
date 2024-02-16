@@ -3,10 +3,22 @@ import Link from 'next/link';
 import { AppBar, Toolbar, Button, Typography, Grid, Paper, Modal, Box, Divider, IconButton } from '@mui/material';
 import { Close, AccountCircle } from '@mui/icons-material';
 
+interface PostType {
+  id: number;
+  title: string;
+  body: string;
+}
+
+interface CommentType {
+  id: number;
+  name: string;
+  body: string;
+}
+
 const Post: React.FC = () => {
-  const [posts, setPosts] = useState([]);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [comments, setComments] = useState([]);
+  const [posts, setPosts] = useState<PostType[]>([]);
+  const [selectedPost, setSelectedPost] = useState<PostType | null>(null);
+  const [comments, setComments] = useState<CommentType[]>([]);
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
@@ -33,14 +45,14 @@ const Post: React.FC = () => {
     }
   };  
   
-  const handlePostClick = (post) => {
+  const handlePostClick = (post: PostType) => {
     setSelectedPost(post);
     if (post && post.id) {
       fetchComments(post.id);
       setOpenModal(true);
     }
   };
-
+  
   const handleCloseModal = () => {
     setOpenModal(false);
   };
@@ -94,7 +106,7 @@ const Post: React.FC = () => {
           <Typography color="textSecondary">{selectedPost?.body}</Typography>
           <Divider style={{ margin: '20px 0' }} />
           <Typography variant="h6" gutterBottom>Comments:</Typography>
-          {comments.map((comment) => (
+          {comments.map((comment: CommentType) => ( // Type assertion for comments
             <Box key={comment.id} sx={{ marginBottom: 2, display: 'flex', alignItems: 'center' }}>
               <AccountCircle sx={{ color: '#333', marginRight: 1, fontSize: 40 }} /> {/* Profile picture icon for comment */}
               <Box>

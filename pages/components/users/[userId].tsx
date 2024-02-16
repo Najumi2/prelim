@@ -1,19 +1,34 @@
-// users/[userId].tsx
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { AppBar, Toolbar, Button, Typography, Grid, Paper } from '@mui/material';
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  // Add other properties as needed
+}
+
+interface Todo {
+  userId: number;
+  id: number;
+  title: string;
+  completed: boolean;
+  // Add other properties as needed
+}
+
 const UserDetails: React.FC = () => {
   const router = useRouter();
   const { userId } = router.query;
-  const [user, setUser] = useState(null);
-  const [todos, setTodos] = useState([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [todos, setTodos] = useState<Todo[]>([]); // Provide type annotation for todos state
 
   useEffect(() => {
     if (userId) {
-      fetchUser(userId);
-      fetchTodos(userId);
+      const userIdString = Array.isArray(userId) ? userId[0] : userId;
+      fetchUser(userIdString);
+      fetchTodos(userIdString);
     }
   }, [userId]);
 
@@ -24,6 +39,7 @@ const UserDetails: React.FC = () => {
       setUser(data);
     } catch (error) {
       console.error('Error fetching user:', error);
+      setUser(null);
     }
   };
 

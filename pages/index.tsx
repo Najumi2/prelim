@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 
 const DynamicChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
-const StatCard = ({ title, total, icon }) => (
+const StatCard = ({ title, total, icon }: { title: string, total: number, icon: React.ElementType }) => (
   <Card sx={{ backgroundColor: '#f0f0f0', color: '#666666', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px' }}>
     <div>
       <Typography variant="h5" component="h2">
@@ -19,6 +19,7 @@ const StatCard = ({ title, total, icon }) => (
     {icon && React.createElement(icon, { style: { fontSize: 40, marginLeft: 'auto' } })}
   </Card>
 );
+
 
 const LoadingIndicator = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -71,27 +72,29 @@ const Home: React.FC = () => {
     }
   };
 
-  const fetchTodosPerUser = async () => {
-    try {
-      const response = await fetch('https://jsonplaceholder.typicode.com/todos');
-      const todos = await response.json();
+const fetchTodosPerUser = async () => {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+    const todos = await response.json();
+  
+    const todosByUser = todos.reduce((acc: { [key: string]: number }, todo: { userId: string }) => {
+      if (acc[todo.userId]) {
+        acc[todo.userId]++;
+      } else {
+        acc[todo.userId] = 1;
+      }
+      return acc;
+    }, {});
+  
+    setTodosPerUser(todosByUser);
+    setLoadingTodosPerUser(false);
+  } catch (error) {
+    console.error('Error fetching todos per user:', error);
+    setLoadingTodosPerUser(false);
+  }
+};
 
-      const todosByUser = todos.reduce((acc, todo) => {
-        if (acc[todo.userId]) {
-          acc[todo.userId]++;
-        } else {
-          acc[todo.userId] = 1;
-        }
-        return acc;
-      }, {});
-
-      setTodosPerUser(todosByUser);
-      setLoadingTodosPerUser(false);
-    } catch (error) {
-      console.error('Error fetching todos per user:', error);
-      setLoadingTodosPerUser(false);
-    }
-  };
+  
 
   const { users, posts, comments, todos, loading } = statistics;
 
@@ -99,23 +102,23 @@ const Home: React.FC = () => {
     options: {
       labels: ['Users', 'Posts', 'Comments', 'Todos'],
       chart: {
-        type: 'bar',
+        type: 'bar' as const, // Specify type as 'bar'
         height: 350,
         background: '#f0f0f0'
       },
-      // other chart options...
+      // other chart options...np
     },
     series: [{
       name: 'Count',
       data: [users, posts, comments, todos]
     }]
   };
-
+   
   const todosPerUserChartData = {
     options: {
       labels: Object.keys(todosPerUser),
       chart: {
-        type: 'bar',
+        type: 'bar' as const,
         height: 350,
         background: '#f0f0f0'
       },
@@ -126,6 +129,8 @@ const Home: React.FC = () => {
       data: Object.values(todosPerUser)
     }]
   };
+  
+  
 
   return (
     <div>
@@ -183,7 +188,12 @@ const Home: React.FC = () => {
                   {loadingTodosPerUser ? (
                     <LoadingIndicator />
                   ) : (
-                    <DynamicChart options={todosPerUserChartData.options} series={todosPerUserChartData.series} type="bar" height={350} />
+                    <DynamicChart
+                      options={todosPerUserChartData.options}
+                      series={todosPerUserChartData.series}
+                      type="bar"
+                      height={350}
+                    />
                   )}
                 </CardContent>
               </Card>

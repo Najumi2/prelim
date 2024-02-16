@@ -1,10 +1,16 @@
-// users/page.tsx
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Button, Typography, Grid, Paper, Avatar } from '@mui/material';
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  // Add other properties as needed
+}
+
 const Users: React.FC = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]); // Provide type annotation for users state
 
   useEffect(() => {
     fetchUsers();
@@ -61,7 +67,7 @@ const Users: React.FC = () => {
                   <Avatar sx={{ bgcolor: '#f0f0f0', color: '#333', marginRight: 1 }}>{user.name.charAt(0)}</Avatar>
                   <div>
                     <Typography variant="subtitle1">{user.name}</Typography>
-                    <Typography variant="body2" color="textSecondary">{user.email}</Typography> {/* Display email */}
+                    <Typography variant="body2" color="textSecondary">{user.email}</Typography>
                   </div>
                 </Paper>
               </Link>
